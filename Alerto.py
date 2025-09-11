@@ -275,7 +275,7 @@ def parse_comment(comment):
         'renforce': renforce
     }
 
-def display_alert_card(alert, all_alerts, is_expired=False):
+def display_alert_card(alert, all_alerts, is_expired=False, is_admin=False):
     """Display an alert card with appropriate status and actions."""
     col1, col2, col3 = st.columns([3, 2, 1])
     
@@ -318,14 +318,16 @@ def display_alert_card(alert, all_alerts, is_expired=False):
             st.caption(f"Expire: {expires_at.strftime('%Y-%m-%d %H:%M')}")
     
     with col3:
-        if not is_expired and st.button("Supprimer", key=f"delete_{alert['symbol']}_{alert['created_at']}"):
-            all_alerts.remove(alert)
-            save_alerts(all_alerts)
-            st.rerun()
-        elif is_expired and st.button("🗑️", key=f"remove_{alert['symbol']}_{alert['created_at']}"):
-            all_alerts.remove(alert)
-            save_alerts(all_alerts)
-            st.rerun()
+        # Only show delete button for admin users
+        if is_admin:
+            if not is_expired and st.button("Supprimer", key=f"delete_{alert['symbol']}_{alert['created_at']}"):
+                all_alerts.remove(alert)
+                save_alerts(all_alerts)
+                st.rerun()
+            elif is_expired and st.button("🗑️", key=f"remove_{alert['symbol']}_{alert['created_at']}"):
+                all_alerts.remove(alert)
+                save_alerts(all_alerts)
+                st.rerun()
     
     st.divider()
 
@@ -490,12 +492,12 @@ if st.session_state.public_access:
         if active_alerts:
             st.subheader("🟢 Alertes Actives")
             for alert in active_alerts:
-                display_alert_card(alert, current_alerts)
+                display_alert_card(alert, current_alerts, is_expired=False, is_admin=False)
         
         if expired_alerts:
             st.subheader("🔴 Alertes Expirées")
             for alert in expired_alerts:
-                display_alert_card(alert, current_alerts, is_expired=True)
+                display_alert_card(alert, current_alerts, is_expired=True, is_admin=False)
     else:
         st.info("Aucune alerte active.")
     
@@ -620,12 +622,12 @@ if current_alerts:
     if active_alerts:
         st.subheader("🟢 Alertes Actives")
         for alert in active_alerts:
-            display_alert_card(alert, current_alerts)
+            display_alert_card(alert, current_alerts, is_expired=False, is_admin=True)
     
     if expired_alerts:
         st.subheader("🔴 Alertes Expirées")
         for alert in expired_alerts:
-            display_alert_card(alert, current_alerts, is_expired=True)
+            display_alert_card(alert, current_alerts, is_expired=True, is_admin=True)
 else:
     st.info("Aucune alerte configurée. Ajoutez votre première alerte en utilisant la barre latérale!")
 
