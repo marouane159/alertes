@@ -135,15 +135,13 @@
         }
     },
     {
-        "name": "R\u00c9SIDENCES DAR SAADA",
+        "name": "RÉSIDENCES DAR SAADA",
         "symbol": "RDS",
         "target_price": 160.0,
         "direction": "below",
         "created_at": "2025-09-11T14:18:00.000000",
         "status": "active",
-
-My PwC Phone, [11/09/2025 16:24]
-"comment_info": {
+        "comment_info": {
             "achat_limite": "160",
             "roi_potentiel": "170 (6%)",
             "risque": "Moyen",
@@ -237,9 +235,8 @@ My PwC Phone, [11/09/2025 16:24]
             "achat_limite": "550",
             "roi_potentiel": "680 (+24%)",
             "risque": "Faible",
-            "temps": "Tr\u00e9s LT",
+            "temps": "Très LT",
             "renforce": "Oui a \u2264 500"
         }
     }
 ]
-
