@@ -82,8 +82,8 @@ BASE_STOCKS = [
 STOCKS_DICT = {stock["symbol"]: stock for stock in BASE_STOCKS}
 
 # --- Authentication Setup ---
-ADMIN_USERNAME = "risk.maroc"
-ADMIN_PASSWORD = "@risk.maroc"
+ADMIN_USERNAME = "risk"
+ADMIN_PASSWORD = "@risk@"
 PUBLIC_PASSWORD = "www.risk.ma"
 
 def check_admin_credentials(username, password):
