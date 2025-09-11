@@ -226,32 +226,37 @@ def parse_comment(comment):
     """
     Parses the comment to extract additional alert information.
     Expected format in comment:
-    Target price: my text
-    Risk level: my text
-    Time: my text
+    Achat limite: my text
+    ROI potentiel: my text
+    Risque: my text
+    Temps: my text
     Renforce: my text
     """
-    target_price = None
-    risk_level = None
-    time_info = None
+    achat_limite = None
+    roi_potentiel = None
+    risque = None
+    temps = None
     renforce = None
     
     if comment:
         lines = comment.split('\n')
         for line in lines:
-            if line.lower().startswith('target price:'):
-                target_price = line.split(':', 1)[1].strip()
-            elif line.lower().startswith('risk level:'):
-                risk_level = line.split(':', 1)[1].strip()
-            elif line.lower().startswith('time:'):
-                time_info = line.split(':', 1)[1].strip()
+            if line.lower().startswith('achat limite:'):
+                achat_limite = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('roi potentiel:'):
+                roi_potentiel = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('risque:'):
+                risque = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('temps:'):
+                temps = line.split(':', 1)[1].strip()
             elif line.lower().startswith('renforce:'):
                 renforce = line.split(':', 1)[1].strip()
     
     return {
-        'target_price_comment': target_price,
-        'risk_level': risk_level,
-        'time': time_info,
+        'achat_limite': achat_limite,
+        'roi_potentiel': roi_potentiel,
+        'risque': risque,
+        'temps': temps,
         'renforce': renforce
     }
 
@@ -382,12 +387,14 @@ if st.session_state.public_access:
             comment_info = alert.get('comment_info', {})
             if any(comment_info.values()):
                 with st.expander("Détails de l'alerte"):
-                    if comment_info.get('target_price_comment'):
-                        st.write(f"**Target Price:** {comment_info['target_price_comment']}")
-                    if comment_info.get('risk_level'):
-                        st.write(f"**Risk Level:** {comment_info['risk_level']}")
-                    if comment_info.get('time'):
-                        st.write(f"**Time:** {comment_info['time']}")
+                    if comment_info.get('achat_limite'):
+                        st.write(f"**Achat limite:** {comment_info['achat_limite']}")
+                    if comment_info.get('roi_potentiel'):
+                        st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
+                    if comment_info.get('risque'):
+                        st.write(f"**Risque:** {comment_info['risque']}")
+                    if comment_info.get('temps'):
+                        st.write(f"**Temps:** {comment_info['temps']}")
                     if comment_info.get('renforce'):
                         st.write(f"**Renforce:** {comment_info['renforce']}")
             
@@ -409,12 +416,14 @@ if st.session_state.public_access:
                 comment_info = alert.get('comment_info', {})
                 if any(comment_info.values()):
                     with st.expander("Détails de l'alerte"):
-                        if comment_info.get('target_price_comment'):
-                            st.write(f"**Target Price:** {comment_info['target_price_comment']}")
-                        if comment_info.get('risk_level'):
-                            st.write(f"**Risk Level:** {comment_info['risk_level']}")
-                        if comment_info.get('time'):
-                            st.write(f"**Time:** {comment_info['time']}")
+                        if comment_info.get('achat_limite'):
+                            st.write(f"**Achat limite:** {comment_info['achat_limite']}")
+                        if comment_info.get('roi_potentiel'):
+                            st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
+                        if comment_info.get('risque'):
+                            st.write(f"**Risque:** {comment_info['risque']}")
+                        if comment_info.get('temps'):
+                            st.write(f"**Temps:** {comment_info['temps']}")
                         if comment_info.get('renforce'):
                             st.write(f"**Renforce:** {comment_info['renforce']}")
             
@@ -471,12 +480,14 @@ if triggered_alerts:
         comment_info = alert.get('comment_info', {})
         if any(comment_info.values()):
             with st.expander("Détails de l'alerte"):
-                if comment_info.get('target_price_comment'):
-                    st.write(f"**Target Price:** {comment_info['target_price_comment']}")
-                if comment_info.get('risk_level'):
-                    st.write(f"**Risk Level:** {comment_info['risk_level']}")
-                if comment_info.get('time'):
-                    st.write(f"**Time:** {comment_info['time']}")
+                if comment_info.get('achat_limite'):
+                    st.write(f"**Achat limite:** {comment_info['achat_limite']}")
+                if comment_info.get('roi_potentiel'):
+                    st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
+                if comment_info.get('risque'):
+                    st.write(f"**Risque:** {comment_info['risque']}")
+                if comment_info.get('temps'):
+                    st.write(f"**Temps:** {comment_info['temps']}")
                 if comment_info.get('renforce'):
                     st.write(f"**Renforce:** {comment_info['renforce']}")
         
@@ -511,10 +522,11 @@ with st.sidebar:
         st.markdown("""
         Vous pouvez ajouter des informations supplémentaires en utilisant le format suivant:
         ```
-        Target price: my text
-        Risk level: my text
-        Time: my text
-        Renforce: my text
+        Achat limite: 
+        ROI potentiel:
+        Risque: 
+        Temps: 
+        Renforce:
         ```
         """)
         comment = st.text_area("Commentaire (format spécifique)", height=120)
@@ -554,12 +566,14 @@ if current_alerts:
             comment_info = alert.get('comment_info', {})
             if any(comment_info.values()):
                 with st.expander("Détails de l'alerte"):
-                    if comment_info.get('target_price_comment'):
-                        st.write(f"**Target Price:** {comment_info['target_price_comment']}")
-                    if comment_info.get('risk_level'):
-                        st.write(f"**Risk Level:** {comment_info['risk_level']}")
-                    if comment_info.get('time'):
-                        st.write(f"**Time:** {comment_info['time']}")
+                    if comment_info.get('achat_limite'):
+                        st.write(f"**Achat limite:** {comment_info['achat_limite']}")
+                    if comment_info.get('roi_potentiel'):
+                        st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
+                    if comment_info.get('risque'):
+                        st.write(f"**Risque:** {comment_info['risque']}")
+                    if comment_info.get('temps'):
+                        st.write(f"**Temps:** {comment_info['temps']}")
                     if comment_info.get('renforce'):
                         st.write(f"**Renforce:** {comment_info['renforce']}")
         
