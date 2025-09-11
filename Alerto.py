@@ -82,8 +82,8 @@ BASE_STOCKS = [
 STOCKS_DICT = {stock["symbol"]: stock for stock in BASE_STOCKS}
 
 # --- Authentication Setup ---
-ADMIN_USERNAME = "risk"
-ADMIN_PASSWORD = "@risk@"
+ADMIN_USERNAME = "risk.maroc"
+ADMIN_PASSWORD = "@risk.maroc"
 PUBLIC_PASSWORD = "www.risk.ma"
 
 def check_admin_credentials(username, password):
@@ -128,14 +128,8 @@ def load_triggered_alerts():
     return triggered
 
 def check_alert_status(alert):
-    """Check if an alert has expired based on creation time."""
-    created_at = datetime.fromisoformat(alert['created_at'])
-    current_time = datetime.now()
-    
-    # Alert expires after 24 hours
-    if current_time - created_at > timedelta(hours=24):
-        return 'expired'
-    return 'active'
+    """Check if an alert has been triggered."""
+    return alert.get('status', 'active')
 
 # --- Helper Functions ---
 
@@ -281,7 +275,7 @@ def display_alert_card(alert, all_alerts, is_expired=False, is_admin=False):
     
     with col1:
         # Add status badge to the title
-        status_text = "🔴 Expiré" if is_expired else "🟢 Actif"
+        status_text = "🔴 Déclenchée" if is_expired else "🟢 Active"
         st.subheader(f"{alert['name']} {status_text}")
         st.caption(f"Symbole: {alert['symbol']}")
         st.caption(f"Créée le: {datetime.fromisoformat(alert['created_at']).strftime('%Y-%m-%d %H:%M')}")
@@ -311,20 +305,10 @@ def display_alert_card(alert, all_alerts, is_expired=False, is_admin=False):
             
         st.write(f"**Prix Cible:** {alert['target_price']} MAD {direction_symbol}")
         
-        # Show expiration time for active alerts
-        if not is_expired:
-            created_at = datetime.fromisoformat(alert['created_at'])
-            expires_at = created_at + timedelta(hours=24)
-            st.caption(f"Expire: {expires_at.strftime('%Y-%m-%d %H:%M')}")
-    
     with col3:
         # Only show delete button for admin users
         if is_admin:
-            if not is_expired and st.button("Supprimer", key=f"delete_{alert['symbol']}_{alert['created_at']}"):
-                all_alerts.remove(alert)
-                save_alerts(all_alerts)
-                st.rerun()
-            elif is_expired and st.button("🗑️", key=f"remove_{alert['symbol']}_{alert['created_at']}"):
+            if st.button("Supprimer", key=f"delete_{alert['symbol']}_{alert['created_at']}"):
                 all_alerts.remove(alert)
                 save_alerts(all_alerts)
                 st.rerun()
@@ -349,15 +333,11 @@ def check_alerts():
 
             current_time = datetime.now()
 
-            # Check status for all alerts
-            for alert in all_alerts:
-                alert['status'] = check_alert_status(alert)
-
             # Only check during market hours (9 AM to 4:30 PM)
             if current_time.hour >= 9 and current_time.hour < 16:
                 for alert in all_alerts:
-                    # Skip checking if alert is expired
-                    if alert['status'] == 'expired':
+                    # Skip checking if alert is already triggered
+                    if alert.get('status') == 'triggered':
                         continue
                         
                     # Check if it's time to check this alert again
@@ -388,10 +368,9 @@ def check_alerts():
                                 json.dump(triggered_info, f)
                                 f.write("\n")
                             
-                            # Remove the triggered alert from the active list
-                            all_alerts.remove(alert)
-                            save_alerts(all_alerts)
-                            
+                            # Update the alert's status to 'triggered' instead of deleting it
+                            alert['status'] = 'triggered'
+            
             # 3. Save the updated alerts file (with status and last_checked times)
             save_alerts(all_alerts)
             
@@ -483,20 +462,20 @@ if st.session_state.public_access:
     # Display current alerts with status
     current_alerts = load_alerts()
     if current_alerts:
-        st.header("Alertes Actives")
+        st.header("Alertes")
         
         # Filter alerts by status
         active_alerts = [alert for alert in current_alerts if alert['status'] == 'active']
-        expired_alerts = [alert for alert in current_alerts if alert['status'] == 'expired']
+        triggered_alerts_on_display = [alert for alert in current_alerts if alert['status'] == 'triggered']
         
         if active_alerts:
             st.subheader("🟢 Alertes Actives")
             for alert in active_alerts:
                 display_alert_card(alert, current_alerts, is_expired=False, is_admin=False)
         
-        if expired_alerts:
-            st.subheader("🔴 Alertes Expirées")
-            for alert in expired_alerts:
+        if triggered_alerts_on_display:
+            st.subheader("🔴 Alertes Déclenchées")
+            for alert in triggered_alerts_on_display:
                 display_alert_card(alert, current_alerts, is_expired=True, is_admin=False)
     else:
         st.info("Aucune alerte active.")
@@ -611,22 +590,22 @@ with st.sidebar:
         st.error("Impossible de récupérer les données boursières. Veuillez réessayer plus tard.")
 
 # --- Main Content Area ---
-st.header("Vos Alertes Actives")
+st.header("Vos Alertes")
 current_alerts = load_alerts()
 
 if current_alerts:
     # Filter alerts by status
     active_alerts = [alert for alert in current_alerts if alert['status'] == 'active']
-    expired_alerts = [alert for alert in current_alerts if alert['status'] == 'expired']
+    triggered_alerts_on_display = [alert for alert in current_alerts if alert['status'] == 'triggered']
     
     if active_alerts:
         st.subheader("🟢 Alertes Actives")
         for alert in active_alerts:
             display_alert_card(alert, current_alerts, is_expired=False, is_admin=True)
     
-    if expired_alerts:
-        st.subheader("🔴 Alertes Expirées")
-        for alert in expired_alerts:
+    if triggered_alerts_on_display:
+        st.subheader("🔴 Alertes Déclenchées")
+        for alert in triggered_alerts_on_display:
             display_alert_card(alert, current_alerts, is_expired=True, is_admin=True)
 else:
     st.info("Aucune alerte configurée. Ajoutez votre première alerte en utilisant la barre latérale!")
