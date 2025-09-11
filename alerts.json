@@ -1,1 +1,245 @@
+[
+    {
+        "name": "ALLIANCES",
+        "symbol": "ADI",
+        "target_price": 520.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:02:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "520",
+            "roi_potentiel": "600 (+16%)",
+            "risque": "Moyen",
+            "temps": "MT/LT",
+            "renforce": "Oui a \u2264 500"
+        }
+    },
+    {
+        "name": "CMGP CAS",
+        "symbol": "CMG",
+        "target_price": 380.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:04:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "380",
+            "roi_potentiel": "440 (+20%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 360"
+        }
+    },
+    {
+        "name": "CFG BANK",
+        "symbol": "CFG",
+        "target_price": 240.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:05:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "240",
+            "roi_potentiel": "260 (+8%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 230"
+        }
+    },
+    {
+        "name": "DELTA HOLDING",
+        "symbol": "DHO",
+        "target_price": 83.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:06:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "83",
+            "roi_potentiel": "90 (+8%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 80"
+        }
+    },
+    {
+        "name": "FENIE BROSSETTE",
+        "symbol": "FBR",
+        "target_price": 450.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:08:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "450",
+            "roi_potentiel": "550 (+20%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 400"
+        }
+    },
+    {
+        "name": "MAROC TELECOM",
+        "symbol": "IAM",
+        "target_price": 120.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:09:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "123",
+            "roi_potentiel": "136 (+11%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 120"
+        }
+    },
+    {
+        "name": "JET CONTRACTORS",
+        "symbol": "JET",
+        "target_price": 2300.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:13:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "2300",
+            "roi_potentiel": "2700 (+17%)",
+            "risque": "Faible",
+            "temps": "MT/LT",
+            "renforce": "Oui a \u2264 2000"
+        }
+    },
+    {
+        "name": "MUTANDIS",
+        "symbol": "MUT",
+        "target_price": 280.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:16:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "295",
+            "roi_potentiel": "320 (8%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 280"
+        }
+    },
+    {
+        "name": "SODEP MARSA MAROC",
+        "symbol": "MSA",
+        "target_price": 960.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:15:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "970",
+            "roi_potentiel": "1050 (7%)",
+            "risque": "Faible",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 930"
+        }
+    },
+    {
+        "name": "R\u00c9SIDENCES DAR SAADA",
+        "symbol": "RDS",
+        "target_price": 160.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:18:00.000000",
+        "status": "active",
+
+My PwC Phone, [11/09/2025 16:24]
+"comment_info": {
+            "achat_limite": "160",
+            "roi_potentiel": "170 (6%)",
+            "risque": "Moyen",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 150"
+        }
+    },
+    {
+        "name": "VICENNE",
+        "symbol": "VCN",
+        "target_price": 450.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:19:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "450",
+            "roi_potentiel": "480 (8%)",
+            "risque": "Faible",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 440"
+        }
+    },
+    {
+        "name": "SONASID",
+        "symbol": "SID",
+        "target_price": 2350.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:25:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "2350",
+            "roi_potentiel": "2800 (+19%)",
+            "risque": "Faible",
+            "temps": "MT/LT",
+            "renforce": "Oui a \u2264 2300"
+        }
+    },
+    {
+        "name": "SONASID",
+        "symbol": "SID",
+        "target_price": 2500.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:26:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "2500",
+            "roi_potentiel": "2800 (+12%)",
+            "risque": "Faible",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 2300"
+        }
+    },
+    {
+        "name": "STOKVIS NORD AFRIQUE",
+        "symbol": "SNA",
+        "target_price": 120.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:27:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "120",
+            "roi_potentiel": "150 (+25%)",
+            "risque": "Faible",
+            "temps": "CT/MT",
+            "renforce": "Oui a \u2264 110"
+        }
+    },
+    {
+        "name": "TAQA MOROCCO",
+        "symbol": "TQM",
+        "target_price": 2750.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:29:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "2750",
+            "roi_potentiel": "3000 (+10%)",
+            "risque": "Faible",
+            "temps": "MT/LT",
+            "renforce": "Oui a \u2264 2700"
+        }
+    },
+    {
+        "name": "HPS",
+        "symbol": "HPS",
+        "target_price": 550.0,
+        "direction": "below",
+        "created_at": "2025-09-11T14:31:00.000000",
+        "status": "active",
+        "comment_info": {
+            "achat_limite": "550",
+            "roi_potentiel": "680 (+24%)",
+            "risque": "Faible",
+            "temps": "Tr\u00e9s LT",
+            "renforce": "Oui a \u2264 500"
+        }
+    }
+]
 
