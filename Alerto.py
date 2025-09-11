@@ -11,6 +11,7 @@ import io
 import json
 import numpy as np
 import base64 # Import the base64 library for encoding
+import re  # Import regex for parsing comments
 
 # A list of Moroccan stocks with their symbols and sectors
 BASE_STOCKS = [
@@ -221,6 +222,39 @@ def autoplay_audio(audio_buffer):
             """
         st.markdown(md, unsafe_allow_html=True)
 
+def parse_comment(comment):
+    """
+    Parses the comment to extract additional alert information.
+    Expected format in comment:
+    Target price: my text
+    Risk level: my text
+    Time: my text
+    Renforce: my text
+    """
+    target_price = None
+    risk_level = None
+    time_info = None
+    renforce = None
+    
+    if comment:
+        lines = comment.split('\n')
+        for line in lines:
+            if line.lower().startswith('target price:'):
+                target_price = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('risk level:'):
+                risk_level = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('time:'):
+                time_info = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('renforce:'):
+                renforce = line.split(':', 1)[1].strip()
+    
+    return {
+        'target_price_comment': target_price,
+        'risk_level': risk_level,
+        'time': time_info,
+        'renforce': renforce
+    }
+
 # --- Background Thread Function ---
 
 def check_alerts():
@@ -263,7 +297,8 @@ def check_alerts():
                                 "price": current_price,
                                 "target": alert['target_price'],
                                 "direction": alert['direction'],
-                                "timestamp": datetime.now().isoformat()
+                                "timestamp": datetime.now().isoformat(),
+                                "comment_info": alert.get('comment_info', {})
                             }
                             with open("triggered_alerts.json", "a") as f:
                                 json.dump(triggered_info, f)
@@ -342,6 +377,20 @@ if st.session_state.public_access:
         st.header("🚨 Alertes Déclenchées")
         for alert in triggered_alerts:
             st.warning(f"{alert['name']} a atteint {alert['price']} MAD!")
+            
+            # Display additional info if available
+            comment_info = alert.get('comment_info', {})
+            if any(comment_info.values()):
+                with st.expander("Détails de l'alerte"):
+                    if comment_info.get('target_price_comment'):
+                        st.write(f"**Target Price:** {comment_info['target_price_comment']}")
+                    if comment_info.get('risk_level'):
+                        st.write(f"**Risk Level:** {comment_info['risk_level']}")
+                    if comment_info.get('time'):
+                        st.write(f"**Time:** {comment_info['time']}")
+                    if comment_info.get('renforce'):
+                        st.write(f"**Renforce:** {comment_info['renforce']}")
+            
             audio_buffer = create_french_alert(alert['name'], alert['direction'], alert['target'])
             autoplay_audio(audio_buffer)
     
@@ -355,6 +404,19 @@ if st.session_state.public_access:
             with col1:
                 st.subheader(alert['name'])
                 st.caption(f"Symbole: {alert['symbol']}")
+                
+                # Display additional info if available
+                comment_info = alert.get('comment_info', {})
+                if any(comment_info.values()):
+                    with st.expander("Détails de l'alerte"):
+                        if comment_info.get('target_price_comment'):
+                            st.write(f"**Target Price:** {comment_info['target_price_comment']}")
+                        if comment_info.get('risk_level'):
+                            st.write(f"**Risk Level:** {comment_info['risk_level']}")
+                        if comment_info.get('time'):
+                            st.write(f"**Time:** {comment_info['time']}")
+                        if comment_info.get('renforce'):
+                            st.write(f"**Renforce:** {comment_info['renforce']}")
             
             with col2:
                 if alert['direction'] == 'above':
@@ -404,6 +466,20 @@ triggered_alerts = load_triggered_alerts()
 if triggered_alerts:
     for alert in triggered_alerts:
         st.warning(f"🚨 ALERTE: Le titre {alert['name']} a atteint {alert['price']} MAD!")
+        
+        # Display additional info if available
+        comment_info = alert.get('comment_info', {})
+        if any(comment_info.values()):
+            with st.expander("Détails de l'alerte"):
+                if comment_info.get('target_price_comment'):
+                    st.write(f"**Target Price:** {comment_info['target_price_comment']}")
+                if comment_info.get('risk_level'):
+                    st.write(f"**Risk Level:** {comment_info['risk_level']}")
+                if comment_info.get('time'):
+                    st.write(f"**Time:** {comment_info['time']}")
+                if comment_info.get('renforce'):
+                    st.write(f"**Renforce:** {comment_info['renforce']}")
+        
         audio_buffer = create_french_alert(alert['name'], alert['direction'], alert['target'])
         autoplay_audio(audio_buffer)
 
@@ -429,13 +505,28 @@ with st.sidebar:
         direction = st.radio("Alerter lorsque le prix est:", ["au-dessus", "en-dessous", "égal à"])
         direction_map = {"au-dessus": "above", "en-dessous": "below", "égal à": "equals"}
         
+        # Add comment field for additional information
+        st.markdown("---")
+        st.subheader("Informations supplémentaires (optionnel)")
+        st.markdown("""
+        Vous pouvez ajouter des informations supplémentaires en utilisant le format suivant:
+        ```
+        Target price: my text
+        Risk level: my text
+        Time: my text
+        Renforce: my text
+        ```
+        """)
+        comment = st.text_area("Commentaire (format spécifique)", height=120)
+        
         if st.button("Ajouter l'Alerte"):
             new_alert = {
                 'name': stock_info["name"],
                 'symbol': symbol,
                 'target_price': target_price,
                 'direction': direction_map[direction],
-                'created_at': datetime.now().isoformat()
+                'created_at': datetime.now().isoformat(),
+                'comment_info': parse_comment(comment)
             }
             
             # Load, append, and save to the shared file
@@ -458,6 +549,19 @@ if current_alerts:
             st.subheader(alert['name'])
             st.caption(f"Symbole: {alert['symbol']}")
             st.caption(f"Créée le: {alert['created_at']}")
+            
+            # Display additional info if available
+            comment_info = alert.get('comment_info', {})
+            if any(comment_info.values()):
+                with st.expander("Détails de l'alerte"):
+                    if comment_info.get('target_price_comment'):
+                        st.write(f"**Target Price:** {comment_info['target_price_comment']}")
+                    if comment_info.get('risk_level'):
+                        st.write(f"**Risk Level:** {comment_info['risk_level']}")
+                    if comment_info.get('time'):
+                        st.write(f"**Time:** {comment_info['time']}")
+                    if comment_info.get('renforce'):
+                        st.write(f"**Renforce:** {comment_info['renforce']}")
         
         with col2:
             if alert['direction'] == 'above':
