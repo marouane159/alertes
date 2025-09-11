@@ -10,8 +10,8 @@ from gtts import gTTS
 import io
 import json
 import numpy as np
-import base64 # Import the base64 library for encoding
-import re  # Import regex for parsing comments
+import base64
+import re
 
 # A list of Moroccan stocks with their symbols and sectors
 BASE_STOCKS = [
@@ -99,7 +99,12 @@ def load_alerts():
     """Loads all alerts from the shared JSON file."""
     try:
         with open("alerts.json", "r") as f:
-            return json.load(f)
+            alerts = json.load(f)
+            # Add status to each alert if not present
+            for alert in alerts:
+                if 'status' not in alert:
+                    alert['status'] = 'active'
+            return alerts
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
@@ -121,6 +126,16 @@ def load_triggered_alerts():
     except (FileNotFoundError, json.JSONDecodeError):
         pass
     return triggered
+
+def check_alert_status(alert):
+    """Check if an alert has expired based on creation time."""
+    created_at = datetime.fromisoformat(alert['created_at'])
+    current_time = datetime.now()
+    
+    # Alert expires after 24 hours
+    if current_time - created_at > timedelta(hours=24):
+        return 'expired'
+    return 'active'
 
 # --- Helper Functions ---
 
@@ -260,6 +275,60 @@ def parse_comment(comment):
         'renforce': renforce
     }
 
+def display_alert_card(alert, all_alerts, is_expired=False):
+    """Display an alert card with appropriate status and actions."""
+    col1, col2, col3 = st.columns([3, 2, 1])
+    
+    with col1:
+        # Add status badge to the title
+        status_text = "🔴 Expiré" if is_expired else "🟢 Actif"
+        st.subheader(f"{alert['name']} {status_text}")
+        st.caption(f"Symbole: {alert['symbol']}")
+        st.caption(f"Créée le: {datetime.fromisoformat(alert['created_at']).strftime('%Y-%m-%d %H:%M')}")
+        
+        # Display additional info if available
+        comment_info = alert.get('comment_info', {})
+        if any(comment_info.values()):
+            with st.expander("Détails de l'alerte"):
+                if comment_info.get('achat_limite'):
+                    st.write(f"**Achat limite:** {comment_info['achat_limite']}")
+                if comment_info.get('roi_potentiel'):
+                    st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
+                if comment_info.get('risque'):
+                    st.write(f"**Risque:** {comment_info['risque']}")
+                if comment_info.get('temps'):
+                    st.write(f"**Temps:** {comment_info['temps']}")
+                if comment_info.get('renforce'):
+                    st.write(f"**Renforce:** {comment_info['renforce']}")
+    
+    with col2:
+        if alert['direction'] == 'above':
+            direction_symbol = "↗️ Au-dessus de"
+        elif alert['direction'] == 'below':
+            direction_symbol = "↘️ En-dessous de"
+        else:
+            direction_symbol = "= Égal à"
+            
+        st.write(f"**Prix Cible:** {alert['target_price']} MAD {direction_symbol}")
+        
+        # Show expiration time for active alerts
+        if not is_expired:
+            created_at = datetime.fromisoformat(alert['created_at'])
+            expires_at = created_at + timedelta(hours=24)
+            st.caption(f"Expire: {expires_at.strftime('%Y-%m-%d %H:%M')}")
+    
+    with col3:
+        if not is_expired and st.button("Supprimer", key=f"delete_{alert['symbol']}_{alert['created_at']}"):
+            all_alerts.remove(alert)
+            save_alerts(all_alerts)
+            st.rerun()
+        elif is_expired and st.button("🗑️", key=f"remove_{alert['symbol']}_{alert['created_at']}"):
+            all_alerts.remove(alert)
+            save_alerts(all_alerts)
+            st.rerun()
+    
+    st.divider()
+
 # --- Background Thread Function ---
 
 def check_alerts():
@@ -278,9 +347,17 @@ def check_alerts():
 
             current_time = datetime.now()
 
+            # Check status for all alerts
+            for alert in all_alerts:
+                alert['status'] = check_alert_status(alert)
+
             # Only check during market hours (9 AM to 4:30 PM)
             if current_time.hour >= 9 and current_time.hour < 16:
                 for alert in all_alerts:
+                    # Skip checking if alert is expired
+                    if alert['status'] == 'expired':
+                        continue
+                        
                     # Check if it's time to check this alert again
                     if 'last_checked' not in alert or current_time - datetime.fromisoformat(alert['last_checked']) >= timedelta(minutes=5):
                         current_price = fetch_stock_price(alert['symbol'])
@@ -313,7 +390,7 @@ def check_alerts():
                             all_alerts.remove(alert)
                             save_alerts(all_alerts)
                             
-            # 3. Save the updated alerts file (with last_checked times)
+            # 3. Save the updated alerts file (with status and last_checked times)
             save_alerts(all_alerts)
             
             # Wait for 5 minutes before the next check
@@ -401,43 +478,24 @@ if st.session_state.public_access:
             audio_buffer = create_french_alert(alert['name'], alert['direction'], alert['target'])
             autoplay_audio(audio_buffer)
     
-    # Display current alerts
+    # Display current alerts with status
     current_alerts = load_alerts()
     if current_alerts:
         st.header("Alertes Actives")
-        for alert in current_alerts:
-            col1, col2 = st.columns([3, 2])
-            
-            with col1:
-                st.subheader(alert['name'])
-                st.caption(f"Symbole: {alert['symbol']}")
-                
-                # Display additional info if available
-                comment_info = alert.get('comment_info', {})
-                if any(comment_info.values()):
-                    with st.expander("Détails de l'alerte"):
-                        if comment_info.get('achat_limite'):
-                            st.write(f"**Achat limite:** {comment_info['achat_limite']}")
-                        if comment_info.get('roi_potentiel'):
-                            st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
-                        if comment_info.get('risque'):
-                            st.write(f"**Risque:** {comment_info['risque']}")
-                        if comment_info.get('temps'):
-                            st.write(f"**Temps:** {comment_info['temps']}")
-                        if comment_info.get('renforce'):
-                            st.write(f"**Renforce:** {comment_info['renforce']}")
-            
-            with col2:
-                if alert['direction'] == 'above':
-                    direction_symbol = "↗️ Au-dessus de"
-                elif alert['direction'] == 'below':
-                    direction_symbol = "↘️ En-dessous de"
-                else:
-                    direction_symbol = "= Égal à"
-                    
-                st.write(f"**Prix Cible:** {alert['target_price']} MAD {direction_symbol}")
-            
-            st.divider()
+        
+        # Filter alerts by status
+        active_alerts = [alert for alert in current_alerts if alert['status'] == 'active']
+        expired_alerts = [alert for alert in current_alerts if alert['status'] == 'expired']
+        
+        if active_alerts:
+            st.subheader("🟢 Alertes Actives")
+            for alert in active_alerts:
+                display_alert_card(alert, current_alerts)
+        
+        if expired_alerts:
+            st.subheader("🔴 Alertes Expirées")
+            for alert in expired_alerts:
+                display_alert_card(alert, current_alerts, is_expired=True)
     else:
         st.info("Aucune alerte active.")
     
@@ -538,6 +596,7 @@ with st.sidebar:
                 'target_price': target_price,
                 'direction': direction_map[direction],
                 'created_at': datetime.now().isoformat(),
+                'status': 'active',
                 'comment_info': parse_comment(comment)
             }
             
@@ -554,46 +613,19 @@ st.header("Vos Alertes Actives")
 current_alerts = load_alerts()
 
 if current_alerts:
-    for i, alert in enumerate(current_alerts):
-        col1, col2, col3 = st.columns([3, 2, 1])
-        
-        with col1:
-            st.subheader(alert['name'])
-            st.caption(f"Symbole: {alert['symbol']}")
-            st.caption(f"Créée le: {alert['created_at']}")
-            
-            # Display additional info if available
-            comment_info = alert.get('comment_info', {})
-            if any(comment_info.values()):
-                with st.expander("Détails de l'alerte"):
-                    if comment_info.get('achat_limite'):
-                        st.write(f"**Achat limite:** {comment_info['achat_limite']}")
-                    if comment_info.get('roi_potentiel'):
-                        st.write(f"**ROI potentiel:** {comment_info['roi_potentiel']}")
-                    if comment_info.get('risque'):
-                        st.write(f"**Risque:** {comment_info['risque']}")
-                    if comment_info.get('temps'):
-                        st.write(f"**Temps:** {comment_info['temps']}")
-                    if comment_info.get('renforce'):
-                        st.write(f"**Renforce:** {comment_info['renforce']}")
-        
-        with col2:
-            if alert['direction'] == 'above':
-                direction_symbol = "↗️ Au-dessus de"
-            elif alert['direction'] == 'below':
-                direction_symbol = "↘️ En-dessous de"
-            else:
-                direction_symbol = "= Égal à"
-                
-            st.write(f"**Prix Cible:** {alert['target_price']} MAD {direction_symbol}")
-        
-        with col3:
-            if st.button("Supprimer", key=f"delete_{i}"):
-                current_alerts.pop(i)
-                save_alerts(current_alerts)
-                st.rerun()
-        
-        st.divider()
+    # Filter alerts by status
+    active_alerts = [alert for alert in current_alerts if alert['status'] == 'active']
+    expired_alerts = [alert for alert in current_alerts if alert['status'] == 'expired']
+    
+    if active_alerts:
+        st.subheader("🟢 Alertes Actives")
+        for alert in active_alerts:
+            display_alert_card(alert, current_alerts)
+    
+    if expired_alerts:
+        st.subheader("🔴 Alertes Expirées")
+        for alert in expired_alerts:
+            display_alert_card(alert, current_alerts, is_expired=True)
 else:
     st.info("Aucune alerte configurée. Ajoutez votre première alerte en utilisant la barre latérale!")
 
