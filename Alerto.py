@@ -84,7 +84,7 @@ STOCKS_DICT = {stock["symbol"]: stock for stock in BASE_STOCKS}
 # --- Authentication Setup ---
 ADMIN_USERNAME = "risk"
 ADMIN_PASSWORD = "@risk@"
-PUBLIC_PASSWORD = "www.risk.ma"
+PUBLIC_PASSWORD = "masialerts"
 
 def check_admin_credentials(username, password):
     """Check if the provided credentials match the admin credentials."""
