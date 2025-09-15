@@ -29,6 +29,7 @@ BASE_STOCKS = [
     {"symbol": "CFG", "name": "CFG BANK", "sector": "Banque"},
     {"symbol": "CMG", "name": "CMGP CAS", "sector": "Agriculture"},
     {"symbol": "HPS", "name": "HPS", "sector": "Paiment"},
+    {"symbol": "S2M", "name": "S2M", "sector": "Paiment"},
     {"symbol": "RIS", "name": "RISMA", "sector": "Hotel Management"},
     {"symbol": "DHO", "name": "DELTA HOLDING", "sector": "Industrie"},
     {"symbol": "DWY", "name": "DISWAY", "sector": "Distribution éléctro"},
