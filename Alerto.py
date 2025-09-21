@@ -46,6 +46,7 @@ BASE_STOCKS = [
     {"symbol": "AKT", "name": "AKDITAL S.A", "sector": "Santé"},
     {"symbol": "ALM", "name": "ALUMINIUM DU MAROC", "sector": "Matériaux"},
     {"symbol": "ARD", "name": "ARADEI CAPITAL", "sector": "Immobilier"},
+    {"symbol": "IMO", "name": "IMMORENT INVEST", "sector": "Immobilier"},
     {"symbol": "ATH", "name": "AUTO HALL", "sector": "Automobile"},
     {"symbol": "ATL", "name": "ATLANTASANAD", "sector": "Distribution"},
     {"symbol": "ATW", "name": "ATTIJARIWAFA BANK", "sector": "Banque"},
